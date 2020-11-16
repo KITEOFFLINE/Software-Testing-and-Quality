@@ -1,0 +1,2 @@
+testSelection.jar
+后来要改配置文件把jdk路径改下
