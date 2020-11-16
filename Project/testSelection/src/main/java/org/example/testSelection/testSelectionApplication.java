@@ -2,16 +2,17 @@ package org.example.testSelection;
 
 public class testSelectionApplication {
     public static void main(String[] args) throws Exception {
-
-        if (args.length != 3) {
-            throw new Exception("参数输错了");
-        }else {
-            if (args[0].equals("-c")){
-                
-            }else if (args[0].equals("-m")){
-
+        String project_target, change_info;
+        if (args.length == 3 && (args[0].equals("-c") || args[0].equals("-m"))) {
+            project_target = args[1];
+            change_info = args[2];
+            if (args[0].equals("-c")) {
+                //类级测试选择
+            } else {
+                //方法级测试选择
             }
+        } else {
+            throw new Exception("参数输错了");
         }
-        System.out.print(args[0] + "--" + args[1] + "--" + args[2]);
     }
 }
