@@ -39,6 +39,7 @@
             <artifactId>com.ibm.wala.core</artifactId>
             <version>1.5.5</version>
         </dependency>
+
     </dependencies>
 
 </project>

@@ -8,8 +8,10 @@ public class testSelectionApplication {
             change_info = args[2];
             if (args[0].equals("-c")) {
                 //类级测试选择
+                System.out.println("class");
             } else {
                 //方法级测试选择
+                System.out.println("method");
             }
         } else {
             throw new Exception("参数输错了");
