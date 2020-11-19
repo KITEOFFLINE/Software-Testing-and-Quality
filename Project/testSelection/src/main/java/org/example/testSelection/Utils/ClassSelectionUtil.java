@@ -1,6 +1,7 @@
 package org.example.testSelection.Utils;
 
 import com.ibm.wala.ipa.callgraph.CGNode;
+import org.example.testSelection.Main;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -30,11 +31,10 @@ public class ClassSelectionUtil {
                 ps.println("    " + s);
             }
             ps.println("}");
-            System.out.println("生成dot文件");
             // 2.使用graphviz画出pdf
             String command = "dot -T pdf -o class-" + project_name + ".pdf class-" + project_name + ".dot";
             CommandExecuteUtil.executeCommand(command, new File("reports"));
-            System.out.println("转换为pdf");
+            System.out.println(Main.getNowTime() + "生成代码依赖图");
             // 3.根据change_info找到改变的类
             HashSet<String> changedClass = new HashSet<String>();
             String line = "";
@@ -43,7 +43,7 @@ public class ClassSelectionUtil {
                 changedClass.add(line.split(" ")[0]);
                 line = br.readLine(); // 一次读入一行数据
             }
-            // 4.只要这个节点依赖与改变的类的init方法，那么这个节点就受到影响，要选出来重新测试。
+            // 4.只要这个节点依赖与改变的类或者改变的类影响的类，那么这个节点就受到影响，要选出来重新测试。
             String selectionClassPath = "./selection-class.txt";
             File file1 = new File(selectionClassPath);
             PrintStream ps1 = new PrintStream(new FileOutputStream(file1));
@@ -68,7 +68,7 @@ public class ClassSelectionUtil {
             ) {
                 ps1.println(s);
             }
-            System.out.println("找到了受影响的测试");
+            System.out.println(Main.getNowTime() + "完成测试选择");
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }

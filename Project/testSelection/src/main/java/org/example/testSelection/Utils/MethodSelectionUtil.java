@@ -1,33 +1,31 @@
 package org.example.testSelection.Utils;
 
 import com.ibm.wala.ipa.callgraph.CGNode;
+import org.example.testSelection.Main;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 
 public class MethodSelectionUtil {
     public static void selection(ArrayList<CGNode[]> cgNodeRelation, String project_name, BufferedReader br) {
         // 1.将图节点关系中的类关系写在dot文件中
-        ArrayList<String> methodDotLine = new ArrayList<>();
+        HashSet<String> methodDotLine = new HashSet<>();
         for (
                 CGNode[] map : cgNodeRelation
         ) {
             methodDotLine.add("\"" + map[0].getMethod().getSignature() + "\" -> \"" + map[1].getMethod().getSignature() + "\";");
         }
-        methodDotLine.sort(Comparator.naturalOrder());
+        List<String> sortedMethodDotLine = new ArrayList<String>(methodDotLine);
+        Collections.sort(sortedMethodDotLine);
         try {
             String parentPath = "reports/";
             File pfile = new File(parentPath);
-            if(!pfile.exists())
-            {
+            if (!pfile.exists()) {
                 pfile.mkdir();
             }
             String dotFilePath = "reports/method-" + project_name + ".dot";
             File file = new File(dotFilePath);
-            if(!file.exists())
-            {
+            if (!file.exists()) {
                 try {
                     file.createNewFile();
                 } catch (IOException e) {
@@ -36,16 +34,15 @@ public class MethodSelectionUtil {
             }
             PrintStream ps = new PrintStream(new FileOutputStream(file));
             ps.println("digraph " + "method {");
-            for (String s : methodDotLine
+            for (String s : sortedMethodDotLine
             ) {
                 ps.println("    " + s);
             }
             ps.println("}");
-            System.out.println("生成dot文件");
             // 2.使用graphviz画出pdf
             String command = "dot -T pdf -o method-" + project_name + ".pdf method-" + project_name + ".dot";
             CommandExecuteUtil.executeCommand(command, new File("reports"));
-            System.out.println("转换为pdf");
+            System.out.println(Main.getNowTime() + "生成代码依赖图");
             // 3.根据change_info找到改变的方法
             HashSet<String> changedMethod = new HashSet<String>();
             String line = "";
@@ -54,7 +51,7 @@ public class MethodSelectionUtil {
                 changedMethod.add(line.split(" ")[1]);
                 line = br.readLine(); // 一次读入一行数据
             }
-            // 4.只要这个节点依赖与改变的类的init方法，那么这个节点就受到影响，要选出来重新测试。
+            // 4.只要这个节点依赖与改变的节点的方法或者依赖改变的节点的节点的方法，那么这个节点就受到影响，要选出来重新测试。
             String selectionMethodPath = "./selection-method.txt";
             File file1 = new File(selectionMethodPath);
             PrintStream ps1 = new PrintStream(new FileOutputStream(file1));
@@ -79,7 +76,7 @@ public class MethodSelectionUtil {
             ) {
                 ps1.println(s);
             }
-            System.out.println("找到了受影响的测试");
+            System.out.println(Main.getNowTime() + "完成测试选择");
         } catch (
                 IOException ioe) {
             ioe.printStackTrace();
